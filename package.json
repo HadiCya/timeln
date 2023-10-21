@@ -1,0 +1,14 @@
+{
+  "devDependencies": {
+    "autoprefixer": "^10.4.16",
+    "flowbite": "^1.8.1",
+    "flowbite-svelte": "^0.44.18",
+    "flowbite-svelte-icons": "^0.4.4",
+    "postcss": "^8.4.31",
+    "tailwindcss": "^3.3.3"
+  },
+  "dependencies": {
+    "svelte-select": "^5.7.0",
+    "svelte-timeline": "^0.1.2"
+  }
+}
