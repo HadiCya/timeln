@@ -3,7 +3,7 @@
   import Sidebar from "./lib/Sidebar.svelte";
 </script>
 
-<Sidebar />
+<Timeline />
 
 <style>
 </style>

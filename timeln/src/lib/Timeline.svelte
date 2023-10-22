@@ -1,103 +1,115 @@
+<svelte:options accessors={true} />
+
 <script>
-  import { Timeline, TimelineItem } from "flowbite-svelte";
+  import { onMount, onDestroy } from "svelte";
+  import * as d3 from "d3";
   import PopupBox from "./PopupBox.svelte";
-  let events = [
+
+  let scatterSVG;
+
+  let data = [
     {
-      date: "June 4, 1776",
-      title: "Declaration of Independence",
-      content:
-        "The United States Declaration of Independence is adopted by the Continental Congress",
-      textOpacity: 0,
+      date: new Date(2018, 1, 1),
+      title: "Event 1",
+      content: "Description for event 1",
     },
     {
-      date: "March 12, 1861",
-      title: "American Civil War",
-      content: "The American Civil War begins",
-      textOpacity: 0,
+      date: new Date(1400, 6, 1),
+      title: "Event 2",
+      content: "Description for event 2",
     },
     {
-      date: "June 20, 1969",
-      title: "Apollo 11",
-      content:
-        'Neil Armstrong and Edwin "Buzz" Aldrin become the first humans to walk on the Moon',
-      textOpacity: 0,
-    },
-    {
-      date: "June 4, 1776",
-      title: "Declaration of Independence",
-      content:
-        "The United States Declaration of Independence is adopted by the Continental Congress",
-      textOpacity: 0,
-    },
-    {
-      date: "March 12, 1861",
-      title: "American Civil War",
-      content: "The American Civil War begins",
-      textOpacity: 0,
-    },
-    {
-      date: "June 20, 1969",
-      title: "Apollo 11",
-      content:
-        'Neil Armstrong and Edwin "Buzz" Aldrin become the first humans to walk on the Moon',
-      textOpacity: 0,
+      date: new Date(2018, 9, 2),
+      title: "Event 3",
+      content: "Description for event 3",
     },
   ];
 
-  function toggleContent(event) {
-    events.forEach((e) => {
-      if (e !== event) {
-        e.show = false;
-        e.width = "150px";
-        e.textOpacity = 0;
-      }
-    });
+  onMount(() => {
+    let width = 1300;
+    let height = 100;
+    let margin = { top: 40, right: 60, bottom: 40, left: 60 };
+    var circles = [];
 
-    event.show = !event.show;
-    event.width = event.show ? event.title.length + 400 + "ch" : "150px";
-    event.textOpacity = event.show ? 1 : 0;
+    const svg = d3
+      .select(scatterSVG)
+      .attr("width", width)
+      .attr("height", height);
 
-    const buttonRect = event.buttonElement.getBoundingClientRect();
-    event.buttonPosition = {
-      top: buttonRect.top,
-      left: buttonRect.left + event.title.length * 2,
-    };
+    const xScale = d3
+      .scaleTime()
+      .domain(d3.extent(data, (d) => d.date))
+      .range([margin.left, width - margin.right])
+      .nice();
 
-    events = events;
-  }
+    circles = svg
+      .append("g")
+      .selectAll("dot")
+      .data(data)
+      .enter()
+      .append("circle");
+
+    circles
+      .attr("cx", (d) => xScale(d.date))
+      .attr("cy", height / 2)
+      .attr("r", 6)
+      .on("mouseover", function (d, i) {
+        d3.select(this)
+          .transition()
+          .duration(100)
+          .attr("r", 10)
+          .attr("fill", "#ff0000");
+      })
+      .on("mouseout", function (d, i) {
+        d3.select(this)
+          .transition()
+          .duration(100)
+          .attr("r", 6)
+          .attr("fill", "#000000");
+      })
+      .on("click", function (event, d) {
+        const point = this;
+        const pointRect = point.getBoundingClientRect();
+        const popupWidth = 200; // Adjust this width as needed
+
+        const buttonPosition = {
+          top: pointRect.bottom + window.scrollY + 10 + "px", // Adjust the top offset as needed
+          left:
+            pointRect.left +
+            window.scrollX -
+            popupWidth / 2 +
+            pointRect.width / 2 +
+            "px",
+        };
+
+        d.showInfo = !d.showInfo;
+        d.buttonPosition = buttonPosition;
+        data = data;
+      });
+
+    svg
+      .append("g")
+      .attr("transform", "translate(0," + (height - 40) + ")")
+      .style("color", "black")
+      .call(d3.axisBottom(xScale).ticks(width / 80));
+  });
 </script>
 
-<Timeline order="horizontal" class="timeline">
-  {#each events as event}
-    <div
-      class="tl-item"
-      style="width: {event.width}; transition: width 0.3s ease-in-out; "
-    >
-      <TimelineItem title={event.title} date={event.date}>
-        <svelte:fragment slot="icon">
-          <div class="flex items-center">
-            <button
-              class="flex z-10 justify-center items-center w-6 h-6 bg-primary-200 rounded-full ring-0 ring-white dark:bg-primary-900 sm:ring-8 dark:ring-gray-900 shrink-0"
-              on:click={() => toggleContent(event)}
-              aria-label="Toggle content"
-              bind:this={event.buttonElement}
-            />
-            <div
-              class="hidden sm:flex w-full bg-gray-200 h-0.5 dark:bg-gray-700"
-            />
-          </div>
-        </svelte:fragment>
-        {#if event.show}
-          <PopupBox content={event.content} position={event.buttonPosition} />
-        {/if}
-      </TimelineItem>
-    </div>
+<div class="scatterPlot">
+  <svg bind:this={scatterSVG} />
+  {#each data as event}
+    {#if event.showInfo}
+      <PopupBox
+        title={event.title}
+        content={event.content}
+        position={event.buttonPosition}
+      />
+    {/if}
   {/each}
-</Timeline>
+</div>
 
 <style>
-  .tl-item {
-    width: 200px;
-    margin: 10px;
+  .scatterPlot {
+    font-size: 1.5em;
   }
 </style>
