@@ -163,7 +163,7 @@
 
 </div>
   <div>
-    <button class="bx" on:click={submitData}
+    <button class="bx submitButton" on:click={submitData}
       >Submit</button
     >
   </div>
@@ -352,6 +352,10 @@ margin-bottom: 60px;
 margin-left: 35px;
 margin-top: 60px;
 margin-bottom: 60px;
+}
+
+.submitButton {
+  background-color: #1F2937
 }
 
 </style>
