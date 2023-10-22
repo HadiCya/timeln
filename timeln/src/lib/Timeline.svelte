@@ -95,6 +95,7 @@
   });
 </script>
 
+
 <div class="scatterPlot">
   <svg bind:this={scatterSVG} />
   {#each data as event}
