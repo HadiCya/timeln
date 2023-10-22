@@ -3,7 +3,9 @@
   import Sidebar from "./lib/Sidebar.svelte";
 </script>
 
+<Sidebar />
 <Timeline />
+<<<<<<< Updated upstream
 
 <div class="background"></div>
 
@@ -23,3 +25,5 @@
     opacity: 0.03;
   }
 </style>
+=======
+>>>>>>> Stashed changes

@@ -42,6 +42,14 @@
       .range([margin.left, width - margin.right])
       .nice();
 
+    const xaxis = svg
+      .append("g")
+      .attr("transform", "translate(0," + (height - 40) + ")")
+      .style("color", "black")
+      .call(d3.axisBottom(xScale).ticks(width / 80));
+
+    xaxis.selectAll("path").style("stroke", "black").style("stroke-width", 6);
+
     circles = svg
       .append("g")
       .selectAll("dot")
@@ -52,28 +60,35 @@
     circles
       .attr("cx", (d) => xScale(d.date))
       .attr("cy", height / 2)
-      .attr("r", 6)
+      .attr("r", 10)
+      .attr("fill", "#808080")
       .on("mouseover", function (d, i) {
         d3.select(this)
           .transition()
           .duration(100)
-          .attr("r", 10)
+          .attr("r", 14)
           .attr("fill", "#ff0000");
       })
       .on("mouseout", function (d, i) {
         d3.select(this)
           .transition()
           .duration(100)
-          .attr("r", 6)
-          .attr("fill", "#000000");
+          .attr("r", 10)
+          .attr("fill", "#808080");
       })
       .on("click", function (event, d) {
+        data.forEach((e) => {
+          if (e !== d) {
+            e.showInfo = false;
+          }
+        });
+
         const point = this;
         const pointRect = point.getBoundingClientRect();
-        const popupWidth = 200; // Adjust this width as needed
+        const popupWidth = 300;
 
         const buttonPosition = {
-          top: pointRect.bottom + window.scrollY + 10 + "px", // Adjust the top offset as needed
+          top: pointRect.bottom + window.scrollY + 10 + "px",
           left:
             pointRect.left +
             window.scrollX -
@@ -86,12 +101,6 @@
         d.buttonPosition = buttonPosition;
         data = data;
       });
-
-    svg
-      .append("g")
-      .attr("transform", "translate(0," + (height - 40) + ")")
-      .style("color", "black")
-      .call(d3.axisBottom(xScale).ticks(width / 80));
   });
 </script>
 
@@ -111,6 +120,8 @@
 
 <style>
   .scatterPlot {
-    font-size: 1.5em;
+    font-size: 3em;
+    margin-bottom: 200px;
+    width: 100%;
   }
 </style>

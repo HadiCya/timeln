@@ -13,8 +13,10 @@
     ref,
     uploadBytes,
   } from "firebase/storage";
+  import { writable } from "svelte/store";
 
   let isCollapsed = false;
+  export const isLoading = writable(false);
   let message = "";
   let startDate = "";
   let endDate = "";
@@ -27,11 +29,11 @@
   function toggleTextbox() {}
 
   async function submitData() {
-    // Initialize Firestore
+    isLoading.set(true);
+
     const db = getFirestore(firebaseApp);
     const submissionsCollection = collection(db, "submissions");
 
-    // Create a new document in Firestore with text, start date, and end date
     const submissionData = {
       text: message,
       start_date: startDate,
@@ -42,10 +44,8 @@
     try {
       const docRef = await addDoc(submissionsCollection, submissionData);
 
-      // Get the document ID for reference
       console.log("Document written with ID: ", docRef.id);
 
-      // Check if files exist and upload them to Firebase Storage
       if (files && files.length > 0) {
         for (const { file, description } of files) {
           const pdfUrl = await uploadPDF(file, docRef.id);
@@ -57,24 +57,24 @@
         pdfs: submissionData.pdfs,
       });
 
-      // Reset the form and file input
       message = "";
       startDate = "";
       endDate = "";
       files = [];
+      isLoading.set(false);
     } catch (error) {
+      isLoading.set(false);
       console.error("Error adding document: ", error);
     }
   }
 
   async function uploadPDF(file, docId) {
-    // Initialize Firebase Storage
     const storage = getStorage(firebaseApp);
     const storageRef = ref(storage, `pdfs/${docId}/${file.name}`);
 
     try {
       await uploadBytes(storageRef, file);
-      const pdfUrl = await getDownloadURL(storageRef); // Get the download URL
+      const pdfUrl = await getDownloadURL(storageRef);
       console.log("File uploaded successfully.");
       return pdfUrl;
     } catch (error) {
@@ -92,35 +92,43 @@
   }
 </script>
 
-<link href="https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css" rel="stylesheet"/>
+<link
+  href="https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css"
+  rel="stylesheet"
+/>
 
 <div class="side-bar {isCollapsed ? 'collapsed' : ''}">
-  <div class="logo-name-wrapper ">
+  <div class="logo-name-wrapper">
     <div class="logo-name">
       <span class="logo-name__name">
         <img class="logoImage" src="./src/assets/timelnlogo.png" alt="logo">
       </span>
     </div>
     <button class="logo-name__button" on:click={toggleSidebar}>
-      <i class="bx logo-name__icon {isCollapsed ? 'bx-arrow-from-left' : 'bx-arrow-from-right'}" id="logo-name__icon"></i>
+      <i
+        class="bx logo-name__icon {isCollapsed
+          ? 'bx-arrow-from-left'
+          : 'bx-arrow-from-right'}"
+        id="logo-name__icon"
+      />
     </button>
   </div>
 
-<div id="parentmessage">
-  <div class="messagebox">
-    <textarea
-      rows="4"
-      cols="30"
-      class="textarea"
-      placeholder="Submit a Query"
-      on:click={toggleTextbox}
-      bind:value={message}
-    />
+  <div id="parentmessage">
+    <div class="messagebox">
+      <textarea
+        rows="4"
+        cols="30"
+        class="textarea"
+        placeholder="Submit a Query"
+        on:click={toggleTextbox}
+        bind:value={message}
+      />
+    </div>
+    <div class="message float-left-child" on:click={toggleSidebar}>
+      <i class="message-icon bx bx-message-square-edit" />
+    </div>
   </div>
-  <div class="message float-left-child" on:click={toggleSidebar}>
-    <i class="message-icon bx bx-message-square-edit"></i>
-  </div>
-</div>
   <div class="date-range-container">
     <div class="date-range">
       <label for="start-date">Start date:</label>
@@ -137,17 +145,18 @@
       <input type="date" id="end-date" name="end-date" bind:value={endDate} />
     </div>
   </div>
-<div class="fileParent">
-  <label for="many">(Optional) Upload PDF(s) to parse:</label>
-  <input
-    id="many"
-    type="file"
-    multiple
-    accept="application/pdf"
-    on:change={handleFileChange}
-    class="chooseFiles"
-  />
+  <div class="fileParent">
+    <label for="many">(Optional) Upload PDF(s) to parse:</label>
+    <input
+      id="many"
+      type="file"
+      multiple
+      accept="application/pdf"
+      on:change={handleFileChange}
+      class="chooseFiles"
+    />
 
+<<<<<<< Updated upstream
   {#if files}
     <h2>Selected files:</h2>
     {#each files as { file, description }, index (index)}
@@ -164,14 +173,27 @@
   {/if}
 
 </div>
+=======
+    {#if files}
+      <h2>Selected files:</h2>
+      {#each files as { file, description }, index (index)}
+        <div class="file-description">
+          <p>{file.name}</p>
+          <textarea
+            rows="2"
+            cols="20"
+            bind:value={files[index].description}
+            placeholder="Description"
+          />
+        </div>
+      {/each}
+    {/if}
+  </div>
+>>>>>>> Stashed changes
   <div>
-    <button class="bx submitButton" on:click={submitData}
-      >Submit</button
-    >
+    <button class="bx submitButton" on:click={submitData}>Submit</button>
   </div>
 </div>
-
-
 
 <style>
   /* Sidebar Styles */
@@ -238,7 +260,7 @@
   .date-range {
     margin: 10px 0;
     text-align: center;
-    color:white;
+    color: white;
   }
 
   .side-bar.collapsed .date-range {
@@ -276,90 +298,86 @@
     border: 1px solid #ccc;
   }
 
-
   .float-left-child {
     float: left;
   }
 
   .side-bar.collapsed .messagebox {
-  transition: all 1s ease;
-  width: 0%;
-  height: 0%;
-  display: none;
-}
+    transition: all 1s ease;
+    width: 0%;
+    height: 0%;
+    display: none;
+  }
 
-.message {
-  background-color: var(--dark-grey-color);
-  display: flex;
-  align-items: center;
-  padding: 1.55rem 0 1.55rem 1.2rem;
-  border-radius: 0.4rem;
-  position: relative;
-  transition: all 0s ease;
-  opacity: 0;
-}
+  .message {
+    background-color: var(--dark-grey-color);
+    display: flex;
+    align-items: center;
+    padding: 1.55rem 0 1.55rem 1.2rem;
+    border-radius: 0.4rem;
+    position: relative;
+    transition: all 0s ease;
+    opacity: 0;
+  }
 
-.message-icon {
-  font-size: 2rem;
-  width: 0%;
-  height: 0%;
-  transform: translateX(3rem);
-  opacity: 0;
-}
+  .message-icon {
+    font-size: 2rem;
+    width: 0%;
+    height: 0%;
+    transform: translateX(3rem);
+    opacity: 0;
+  }
 
-.side-bar.collapsed .message {
-  cursor: pointer;
-  height: 4rem;
-  padding: 0;
-  opacity: 1;
-  width: 100%;
-}
+  .side-bar.collapsed .message {
+    cursor: pointer;
+    height: 4rem;
+    padding: 0;
+    opacity: 1;
+    width: 100%;
+  }
 
-.side-bar.collapsed .message-icon {
-  transform: translateX(0);
-  opacity: 1;
-  cursor: pointer;
-  height: 100%;
-  width: 100%;
-  text-align: center;
-  vertical-align: middle;
-  line-height: 2;
-  transition: opacity 0.1s ease;
-}
+  .side-bar.collapsed .message-icon {
+    transform: translateX(0);
+    opacity: 1;
+    cursor: pointer;
+    height: 100%;
+    width: 100%;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 2;
+    transition: opacity 0.1s ease;
+  }
 
-.side-bar.collapsed .logo-name {
-  display: none;
-}
+  .side-bar.collapsed .logo-name {
+    display: none;
+  }
 
-.logo-name__button {
-  position: absolute;
-  right: 0;
-  background-color: transparent;
-  border: none;
-  cursor: pointer;
-}
+  .logo-name__button {
+    position: absolute;
+    right: 0;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+  }
 
-.side-bar.collapsed .fileParent {
-  display: none;
-}
+  .side-bar.collapsed .fileParent {
+    display: none;
+  }
 
-.fileParent {
-  text-align: center;
-  width: 100%;
-  margin-top: 60px;
-margin-bottom: 60px;
-}
+  .fileParent {
+    text-align: center;
+    width: 100%;
+    margin-top: 60px;
+    margin-bottom: 60px;
+  }
 
-.chooseFiles {
-margin-left: 35px;
-margin-top: 60px;
-margin-bottom: 60px;
-}
+  .chooseFiles {
+    margin-left: 35px;
+    margin-top: 60px;
+    margin-bottom: 60px;
+  }
 
-.submitButton {
-  background-color: #1F2937
-}
-
+<<<<<<< Updated upstream
 .side-bar.collapsed .submitButton {
   display: none;
 }
@@ -375,4 +393,9 @@ margin-bottom: 60px;
   
 }
 
+=======
+  .submitButton {
+    background-color: #1f2937;
+  }
+>>>>>>> Stashed changes
 </style>
