@@ -10,31 +10,27 @@
   }
 </script>
 
-<div class="side-bar {isCollapsed ? 'collapse' : ''}">
+<div class="side-bar {isCollapsed ? 'collapsed' : ''}">
   <div class="logo-name-wrapper">
     <div class="logo-name">
       <span class="logo-name__name">CSSScript</span>
     </div>
     <button class="logo-name__button" on:click={toggleSidebar}>
-      <i
-        class="bx bx-arrow-from-right logo-name__icon {isCollapsed
-          ? 'collapse'
-          : ''}"
-        id="logo-name__icon"
-      />
+      <i class="bx bx-arrow-from-right" />
     </button>
   </div>
 
-  <div class="messagebox is-horizontal float-left-child">
+  <div class="messagebox">
     <textarea
       rows="4"
       cols="30"
-      class="messagebox textarea {isCollapsed ? 'collapse' : ''}"
+      class="textarea"
       placeholder="Submit a Query"
       on:click={toggleTextbox}
     />
   </div>
-  <div class="message is-horizontal float-left-child">
+
+  <div class="message">
     <i
       class="message-icon bx bx-message-square-edit"
       on:click={toggleTextbox}
@@ -56,6 +52,7 @@
     <input type="checkbox" />
     Checkbox 3
   </label>
+
   <label class="checkbox">
     <input type="checkbox" />
     Checkbox 4
@@ -68,27 +65,39 @@
         <span class="file-icon">
           <i class="fas fa-upload" />
         </span>
-        <span class="file-label"> Choose a file… </span>
+        <span class="file-label">Choose a file…</span>
       </span>
-      <span id="fileName" class="file-name">
-        Screen Shot 2017-07-29 at 15.54.25.png
-      </span>
+      <span id="fileName" class="file-name"
+        >Screen Shot 2017-07-29 at 15.54.25.png</span
+      >
     </label>
   </div>
 </div>
 
 <style>
+  /* Sidebar Styles */
   .side-bar {
-    width: 35rem;
+    width: 20%;
+    height: 100%;
+    min-width: 6.4rem;
     background-color: #17171e;
     position: fixed;
     top: 0;
+    left: 0;
     transition: all 0.5s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+  }
+
+  .collapsed {
+    width: 6.4rem;
   }
 
   .logo-name-wrapper {
     display: flex;
-    font-size: 1.2rem;
+    align-items: center;
   }
 
   .logo-name {
@@ -99,17 +108,15 @@
   .logo-name__name {
     margin-left: 0.9rem;
     white-space: nowrap;
+    color: #fff; /* Text color */
   }
 
   .logo-name__button {
-    position: absolute;
-    top: 50%;
-    right: 0;
     font-size: 1.8rem;
-    transform: translateY(-50%);
     background-color: transparent;
     border: none;
     cursor: pointer;
+    color: #fff; /* Icon color */
   }
 
   .messagebox {
@@ -120,48 +127,7 @@
     resize: none;
   }
 
-  .side-bar.collapse {
-    width: 6.4rem;
-  }
-
-  .side-bar.collapse .logo-name {
-    opacity: 0;
-    pointer-events: none;
-  }
-
-  .side-bar.collapse .message-icon {
-    transform: translateX(0);
-    opacity: 1;
+  .message-icon {
     cursor: pointer;
-    height: 100%;
-    width: 100%;
-    text-align: center;
-    vertical-align: middle;
-    line-height: 2;
-    transition: opacity 0.1s ease;
-  }
-
-  .side-bar.collapse .logo-name__button {
-    right: 0.5rem;
-  }
-
-  .side-bar.collapse .messagebox {
-    width: 0%;
-    height: 0%;
-  }
-
-  .side-bar.collapse .message {
-    height: 4rem;
-    padding: 0;
-    opacity: 1;
-    width: 100%;
-  }
-
-  .side-bar.collapse .file {
-    display: none;
-  }
-
-  .has-name {
-    color: #000;
   }
 </style>

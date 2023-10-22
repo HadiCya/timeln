@@ -6,7 +6,7 @@
 </script>
 
 <main>
-  <Timeline />
+  <Sidebar />
 </main>
 
 <style>
