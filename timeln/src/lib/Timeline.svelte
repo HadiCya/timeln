@@ -2,28 +2,20 @@
 
 <script>
   import { onMount, onDestroy } from "svelte";
+  import { store } from "../my-store.js";
   import * as d3 from "d3";
   import PopupBox from "./PopupBox.svelte";
 
   let scatterSVG;
+  let data = [];
 
-  let data = [
-    {
-      date: new Date(2018, 1, 1),
-      title: "Event 1",
-      content: "Description for event 1",
-    },
-    {
-      date: new Date(1400, 6, 1),
-      title: "Event 2",
-      content: "Description for event 2",
-    },
-    {
-      date: new Date(2018, 9, 2),
-      title: "Event 3",
-      content: "Description for event 3",
-    },
-  ];
+  $: {
+    data = $store.map((dataPoint) => ({
+      date: new Date(dataPoint[4], dataPoint[3], dataPoint[2]),
+      title: dataPoint[1],
+      content: dataPoint[0],
+    }));
+  }
 
   onMount(() => {
     let width = 1300;
@@ -102,7 +94,6 @@
         data = data;
       });
   });
-
 </script>
 
 <div class="scatterPlot">
@@ -118,14 +109,10 @@
   {/each}
 </div>
 
-
-
-
 <style>
   .scatterPlot {
     font-size: 3em;
     margin-bottom: 200px;
     width: 100%;
   }
-
 </style>

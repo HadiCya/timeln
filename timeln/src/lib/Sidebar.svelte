@@ -14,8 +14,11 @@
     uploadBytes,
   } from "firebase/storage";
   import { writable } from "svelte/store";
+  import { store } from "../my-store.js";
+  import axios from "axios";
 
   let isCollapsed = false;
+
   export const isLoading = writable(false);
   let message = "";
   let startDate = "";
@@ -29,6 +32,7 @@
   function toggleTextbox() {}
 
   async function submitData() {
+    store.set([]);
     isLoading.set(true);
 
     const db = getFirestore(firebaseApp);
@@ -57,15 +61,35 @@
         pdfs: submissionData.pdfs,
       });
 
-      message = "";
-      startDate = "";
-      endDate = "";
-      files = [];
       isLoading.set(false);
     } catch (error) {
       isLoading.set(false);
       console.error("Error adding document: ", error);
     }
+
+    const data = {
+      text: message,
+      start_date: startDate,
+      end_date: endDate,
+      pdfs: submissionData.pdfs,
+    };
+
+    try {
+      const response = await axios.post("http://localhost:8000/api", data);
+      handleResponse(response.data);
+    } catch (error) {
+      console.error("Error sending data to Flask: ", error);
+    }
+
+    function handleResponse(data) {
+      store.set(data);
+      console.log($store);
+    }
+
+    message = "";
+    startDate = "";
+    endDate = "";
+    files = [];
   }
 
   async function uploadPDF(file, docId) {
