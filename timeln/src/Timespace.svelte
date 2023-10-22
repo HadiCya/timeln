@@ -5,12 +5,10 @@
 
 <Sidebar />
 <Timeline />
-<<<<<<< Updated upstream
 
-<div class="background"></div>
+<div class="background" />
 
 <style>
-
   .background::before {
     content: "";
     position: absolute;
@@ -18,12 +16,10 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-image: url('./src/assets/timelnlogoMono.png');
+    background-image: url("./src/assets/timelnlogoMono.png");
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
     opacity: 0.03;
   }
 </style>
-=======
->>>>>>> Stashed changes

@@ -101,7 +101,7 @@
   <div class="logo-name-wrapper">
     <div class="logo-name">
       <span class="logo-name__name">
-        <img class="logoImage" src="./src/assets/timelnlogo.png" alt="logo">
+        <img class="logoImage" src="./src/assets/timelnlogo.png" alt="logo" />
       </span>
     </div>
     <button class="logo-name__button" on:click={toggleSidebar}>
@@ -156,29 +156,11 @@
       class="chooseFiles"
     />
 
-<<<<<<< Updated upstream
-  {#if files}
-    <h2>Selected files:</h2>
-    {#each files as { file, description }, index (index)}
-      <div class="file-description">
-        <p class="fileName">{file.name}</p>
-        <textarea
-          rows="2"
-          cols="20"
-          bind:value={files[index].description}
-          placeholder="Description"
-        />
-      </div>
-    {/each}
-  {/if}
-
-</div>
-=======
     {#if files}
       <h2>Selected files:</h2>
       {#each files as { file, description }, index (index)}
         <div class="file-description">
-          <p>{file.name}</p>
+          <p class="fileName">{file.name}</p>
           <textarea
             rows="2"
             cols="20"
@@ -189,7 +171,6 @@
       {/each}
     {/if}
   </div>
->>>>>>> Stashed changes
   <div>
     <button class="bx submitButton" on:click={submitData}>Submit</button>
   </div>
@@ -377,25 +358,17 @@
     margin-bottom: 60px;
   }
 
-<<<<<<< Updated upstream
-.side-bar.collapsed .submitButton {
-  display: none;
-}
-
-.fileName {
-  text-overflow: ellipsis;
-  max-width: 7ch;
-}
-
-.logoImage{
-  height: 4rem;
-  margin-bottom: 1rem;
-  
-}
-
-=======
-  .submitButton {
-    background-color: #1f2937;
+  .side-bar.collapsed .submitButton {
+    display: none;
   }
->>>>>>> Stashed changes
+
+  .fileName {
+    text-overflow: ellipsis;
+    max-width: 7ch;
+  }
+
+  .logoImage {
+    height: 4rem;
+    margin-bottom: 1rem;
+  }
 </style>
