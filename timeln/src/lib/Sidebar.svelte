@@ -92,16 +92,19 @@
   }
 </script>
 
+<link href="https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css" rel="stylesheet"/>
+
 <div class="side-bar {isCollapsed ? 'collapsed' : ''}">
-  <div class="logo-name-wrapper">
+  <div class="logo-name-wrapper ">
     <div class="logo-name">
       <span class="logo-name__name">timeln</span>
     </div>
     <button class="logo-name__button" on:click={toggleSidebar}>
-      <i class="bx bx-arrow-from-right" />
+      <i class="bx logo-name__icon {isCollapsed ? 'bx-arrow-from-left' : 'bx-arrow-from-right'}" id="logo-name__icon"></i>
     </button>
   </div>
 
+<div id="parentmessage">
   <div class="messagebox">
     <textarea
       rows="4"
@@ -112,7 +115,10 @@
       bind:value={message}
     />
   </div>
-
+  <div class="message float-left-child" on:click={toggleSidebar}>
+    <i class="message-icon bx bx-message-square-edit"></i>
+  </div>
+</div>
   <div class="date-range-container">
     <div class="date-range">
       <label for="start-date">Start date:</label>
@@ -129,7 +135,7 @@
       <input type="date" id="end-date" name="end-date" bind:value={endDate} />
     </div>
   </div>
-
+<div class="fileParent">
   <label for="many">(Optional) Upload PDF(s) to parse:</label>
   <input
     id="many"
@@ -137,6 +143,7 @@
     multiple
     accept="application/pdf"
     on:change={handleFileChange}
+    class="chooseFiles"
   />
 
   {#if files}
@@ -154,12 +161,15 @@
     {/each}
   {/if}
 
-  <div class="message">
-    <button class="message-icon bx bx-message-square-edit" on:click={submitData}
+</div>
+  <div>
+    <button class="bx" on:click={submitData}
       >Submit</button
     >
   </div>
 </div>
+
+
 
 <style>
   /* Sidebar Styles */
@@ -185,6 +195,7 @@
   .logo-name-wrapper {
     display: flex;
     align-items: center;
+    height: 4rem;
   }
 
   .logo-name {
@@ -208,10 +219,14 @@
 
   .messagebox {
     width: 100%;
+    opacity: 1;
+    transition: all 1s ease;
   }
 
   .textarea {
     resize: none;
+    background-color: black;
+    border: 1px solid #ccc;
   }
 
   .message-icon {
@@ -220,6 +235,13 @@
 
   .date-range {
     margin: 10px 0;
+    text-align: center;
+    color:white;
+  }
+
+  .side-bar.collapsed .date-range {
+    display: none;
+    transition: all 0.5s ease;
   }
 
   .date-range label {
@@ -232,6 +254,7 @@
     padding: 5px;
     border: 1px solid #ccc;
     border-radius: 4px;
+    background-color: black;
   }
 
   .date-range-container {
@@ -246,5 +269,89 @@
 
   .file-description textarea {
     margin-left: 10px;
+    resize: none;
+    background-color: black;
+    border: 1px solid #ccc;
   }
+
+
+  .float-left-child {
+    float: left;
+  }
+
+  .side-bar.collapsed .messagebox {
+  transition: all 1s ease;
+  width: 0%;
+  height: 0%;
+  display: none;
+}
+
+.message {
+  background-color: var(--dark-grey-color);
+  display: flex;
+  align-items: center;
+  padding: 1.55rem 0 1.55rem 1.2rem;
+  border-radius: 0.4rem;
+  position: relative;
+  transition: all 0s ease;
+  opacity: 0;
+}
+
+.message-icon {
+  font-size: 2rem;
+  width: 0%;
+  height: 0%;
+  transform: translateX(3rem);
+  opacity: 0;
+}
+
+.side-bar.collapsed .message {
+  cursor: pointer;
+  height: 4rem;
+  padding: 0;
+  opacity: 1;
+  width: 100%;
+}
+
+.side-bar.collapsed .message-icon {
+  transform: translateX(0);
+  opacity: 1;
+  cursor: pointer;
+  height: 100%;
+  width: 100%;
+  text-align: center;
+  vertical-align: middle;
+  line-height: 2;
+  transition: opacity 0.1s ease;
+}
+
+.side-bar.collapsed .logo-name {
+  display: none;
+}
+
+.logo-name__button {
+  position: absolute;
+  right: 0;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.side-bar.collapsed .fileParent {
+  display: none;
+}
+
+.fileParent {
+  text-align: center;
+  width: 100%;
+  margin-top: 60px;
+margin-bottom: 60px;
+}
+
+.chooseFiles {
+margin-left: 35px;
+margin-top: 60px;
+margin-bottom: 60px;
+}
+
 </style>
