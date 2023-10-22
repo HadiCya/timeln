@@ -97,7 +97,9 @@
 <div class="side-bar {isCollapsed ? 'collapsed' : ''}">
   <div class="logo-name-wrapper ">
     <div class="logo-name">
-      <span class="logo-name__name">timeln</span>
+      <span class="logo-name__name">
+        <img class="logoImage" src="./src/assets/timelnlogo.png" alt="logo">
+      </span>
     </div>
     <button class="logo-name__button" on:click={toggleSidebar}>
       <i class="bx logo-name__icon {isCollapsed ? 'bx-arrow-from-left' : 'bx-arrow-from-right'}" id="logo-name__icon"></i>
@@ -150,7 +152,7 @@
     <h2>Selected files:</h2>
     {#each files as { file, description }, index (index)}
       <div class="file-description">
-        <p>{file.name}</p>
+        <p class="fileName">{file.name}</p>
         <textarea
           rows="2"
           cols="20"
@@ -245,7 +247,7 @@
   }
 
   .date-range label {
-    color: #fff;
+    color: #020202;
     font-size: 16px;
   }
 
@@ -356,6 +358,21 @@ margin-bottom: 60px;
 
 .submitButton {
   background-color: #1F2937
+}
+
+.side-bar.collapsed .submitButton {
+  display: none;
+}
+
+.fileName {
+  text-overflow: ellipsis;
+  max-width: 7ch;
+}
+
+.logoImage{
+  height: 4rem;
+  margin-bottom: 1rem;
+  
 }
 
 </style>
