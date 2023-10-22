@@ -1,12 +1,9 @@
 <script>
-  import svelteLogo from "./assets/svelte.svg";
-  import viteLogo from "/vite.svg";
-  import Timeline from "./lib/Timeline.svelte";
-  import Sidebar from "./lib/Sidebar.svelte";
+  import Timespace from "./Timespace.svelte";
 </script>
 
 <main>
-  <Sidebar />
+  <Timespace />
 </main>
 
 <style>

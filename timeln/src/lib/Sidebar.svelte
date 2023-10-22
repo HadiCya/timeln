@@ -1,19 +1,101 @@
 <script>
+  import {
+    getFirestore,
+    collection,
+    addDoc,
+    updateDoc,
+    doc,
+  } from "firebase/firestore";
+  import { firebaseApp } from "../firebaseConfig";
+  import {
+    getDownloadURL,
+    getStorage,
+    ref,
+    uploadBytes,
+  } from "firebase/storage";
+
   let isCollapsed = false;
+  let message = "";
+  let startDate = "";
+  let endDate = "";
+  let files = [];
 
   function toggleSidebar() {
     isCollapsed = !isCollapsed;
   }
 
-  function toggleTextbox() {
-    isCollapsed = !isCollapsed;
+  function toggleTextbox() {}
+
+  async function submitData() {
+    // Initialize Firestore
+    const db = getFirestore(firebaseApp);
+    const submissionsCollection = collection(db, "submissions");
+
+    // Create a new document in Firestore with text, start date, and end date
+    const submissionData = {
+      text: message,
+      start_date: startDate,
+      end_date: endDate,
+      pdfs: [],
+    };
+
+    try {
+      const docRef = await addDoc(submissionsCollection, submissionData);
+
+      // Get the document ID for reference
+      console.log("Document written with ID: ", docRef.id);
+
+      // Check if files exist and upload them to Firebase Storage
+      if (files && files.length > 0) {
+        for (const { file, description } of files) {
+          const pdfUrl = await uploadPDF(file, docRef.id);
+          submissionData.pdfs.push({ url: pdfUrl, description });
+        }
+      }
+
+      await updateDoc(doc(submissionsCollection, docRef.id), {
+        pdfs: submissionData.pdfs,
+      });
+
+      // Reset the form and file input
+      message = "";
+      startDate = "";
+      endDate = "";
+      files = [];
+    } catch (error) {
+      console.error("Error adding document: ", error);
+    }
+  }
+
+  async function uploadPDF(file, docId) {
+    // Initialize Firebase Storage
+    const storage = getStorage(firebaseApp);
+    const storageRef = ref(storage, `pdfs/${docId}/${file.name}`);
+
+    try {
+      await uploadBytes(storageRef, file);
+      const pdfUrl = await getDownloadURL(storageRef); // Get the download URL
+      console.log("File uploaded successfully.");
+      return pdfUrl;
+    } catch (error) {
+      console.error("Error uploading file: ", error);
+    }
+  }
+
+  function handleFileChange(event) {
+    const selectedFiles = event.target.files;
+    const filesArray = [];
+    for (let i = 0; i < selectedFiles.length; i++) {
+      filesArray.push({ file: selectedFiles[i], description: "" });
+    }
+    files = filesArray;
   }
 </script>
 
 <div class="side-bar {isCollapsed ? 'collapsed' : ''}">
   <div class="logo-name-wrapper">
     <div class="logo-name">
-      <span class="logo-name__name">CSSScript</span>
+      <span class="logo-name__name">timeln</span>
     </div>
     <button class="logo-name__button" on:click={toggleSidebar}>
       <i class="bx bx-arrow-from-right" />
@@ -27,50 +109,55 @@
       class="textarea"
       placeholder="Submit a Query"
       on:click={toggleTextbox}
+      bind:value={message}
     />
   </div>
+
+  <div class="date-range-container">
+    <div class="date-range">
+      <label for="start-date">Start date:</label>
+      <input
+        type="date"
+        id="start-date"
+        name="start-date"
+        bind:value={startDate}
+      />
+    </div>
+
+    <div class="date-range">
+      <label for="end-date">End date:</label>
+      <input type="date" id="end-date" name="end-date" bind:value={endDate} />
+    </div>
+  </div>
+
+  <label for="many">(Optional) Upload PDF(s) to parse:</label>
+  <input
+    id="many"
+    type="file"
+    multiple
+    accept="application/pdf"
+    on:change={handleFileChange}
+  />
+
+  {#if files}
+    <h2>Selected files:</h2>
+    {#each files as { file, description }, index (index)}
+      <div class="file-description">
+        <p>{file.name}</p>
+        <textarea
+          rows="2"
+          cols="20"
+          bind:value={files[index].description}
+          placeholder="Description"
+        />
+      </div>
+    {/each}
+  {/if}
 
   <div class="message">
-    <i
-      class="message-icon bx bx-message-square-edit"
-      on:click={toggleTextbox}
-    />
-    <span class="tooltip">Submit Query</span>
-  </div>
-
-  <label class="checkbox">
-    <input type="checkbox" />
-    Checkbox 1
-  </label>
-
-  <label class="checkbox">
-    <input type="checkbox" />
-    Checkbox 2
-  </label>
-
-  <label class="checkbox">
-    <input type="checkbox" />
-    Checkbox 3
-  </label>
-
-  <label class="checkbox">
-    <input type="checkbox" />
-    Checkbox 4
-  </label>
-
-  <div class="file has-name">
-    <label class="file-label">
-      <input class="file-input" type="file" name="resume" />
-      <span class="file-cta">
-        <span class="file-icon">
-          <i class="fas fa-upload" />
-        </span>
-        <span class="file-label">Choose a file…</span>
-      </span>
-      <span id="fileName" class="file-name"
-        >Screen Shot 2017-07-29 at 15.54.25.png</span
-      >
-    </label>
+    <button class="message-icon bx bx-message-square-edit" on:click={submitData}
+      >Submit</button
+    >
   </div>
 </div>
 
@@ -129,5 +216,35 @@
 
   .message-icon {
     cursor: pointer;
+  }
+
+  .date-range {
+    margin: 10px 0;
+  }
+
+  .date-range label {
+    color: #fff;
+    font-size: 16px;
+  }
+
+  .date-range input {
+    width: 80%;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+
+  .date-range-container {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .file-description {
+    display: flex;
+    align-items: center;
+  }
+
+  .file-description textarea {
+    margin-left: 10px;
   }
 </style>
