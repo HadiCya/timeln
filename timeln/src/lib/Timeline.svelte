@@ -102,8 +102,8 @@
         data = data;
       });
   });
-</script>
 
+</script>
 
 <div class="scatterPlot">
   <svg bind:this={scatterSVG} />
@@ -118,10 +118,14 @@
   {/each}
 </div>
 
+
+
+
 <style>
   .scatterPlot {
     font-size: 3em;
     margin-bottom: 200px;
     width: 100%;
   }
+
 </style>

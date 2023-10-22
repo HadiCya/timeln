@@ -131,7 +131,7 @@
   </div>
   <div class="date-range-container">
     <div class="date-range">
-      <label for="start-date">Start date:</label>
+      <label class="dateText" for="start-date">Start date:</label>
       <input
         type="date"
         id="start-date"
@@ -267,6 +267,10 @@
     justify-content: space-between;
   }
 
+  .dateText {
+    color: white;
+  }
+
   .file-description {
     display: flex;
     align-items: center;
@@ -360,6 +364,10 @@
 
   .side-bar.collapsed .submitButton {
     display: none;
+  }
+
+  .submitButton {
+    background-color: #1f2937;
   }
 
   .fileName {
