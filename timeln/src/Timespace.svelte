@@ -3,10 +3,10 @@
   import Sidebar from "./lib/Sidebar.svelte";
 </script>
 
+<div class="background" />
+
 <Sidebar />
 <Timeline />
-
-<div class="background" />
 
 <style>
   .background::before {
@@ -21,5 +21,6 @@
     background-repeat: no-repeat;
     background-position: center;
     opacity: 0.03;
+    z-index: -100;
   }
 </style>
